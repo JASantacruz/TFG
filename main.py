@@ -7,18 +7,12 @@ from tracemalloc import start
 from typing import cast
 from urllib import parse
 from fhir import *
-from more_itertools import last
-import arrow
-from oauthlib.oauth2.rfc6749.errors import MissingTokenError
 from typing_extensions import Final
 from withings_api import AuthScope, WithingsAuth, WithingsApi
-from withings_api.common import CredentialsType, MeasureType, AuthFailedException, NotifyAppli
-import requests
-from requests.auth import HTTPBasicAuth
-from pick import pick
-import uuid
+from withings_api.common import CredentialsType, AuthFailedException, NotifyAppli
 import pickle
 from dotenv import load_dotenv
+from options import ShowOptions
 
 # Load environment variables from .env file
 load_dotenv()
@@ -27,10 +21,6 @@ load_dotenv()
 WITHINGS_CLIENT_ID = os.environ.get('WITHINGS_CLIENT_ID')
 WITHINGS_CLIENT_SECRET = os.environ.get('WITHINGS_CLIENT_SECRET')
 CALLBACK_URL = os.environ.get('CALLBACK_URL')
-
-print('ID -> ', WITHINGS_CLIENT_ID)
-print('SECRET -> ', WITHINGS_CLIENT_SECRET)
-print('CALLBACK_URL -> ', CALLBACK_URL)
 
 CREDENTIALS_FILE: Final = path.abspath(
     path.join(path.dirname(path.abspath(__file__)), "./.credentials")
@@ -71,7 +61,7 @@ def main() -> None:
         dest="live_data",
         action="store_true",
         help="Should we run against live data? (Removal of .credentials file is required before running)",
-    )
+    ) 
     
     args: Final = parser.parse_args()
 
@@ -79,10 +69,6 @@ def main() -> None:
         api = WithingsApi(load_credentials(), refresh_cb=save_credentials)
         try:
             api.user_get_device()
-            api.notify_subscribe(
-                callbackurl="https://localhost:8080/new_weights",
-                appli=NotifyAppli.WEIGHT,
-            )
         except AuthFailedException:
             os.remove(CREDENTIALS_FILE)
             print("Credentials in file are expired. Re-starting auth procedure...")
@@ -114,11 +100,16 @@ def main() -> None:
         print("Auth code:", auth_code)
         print("Getting Creddentials with auth code", auth_code)
         save_credentials(auth.get_credentials(auth_code))
+        api.notify_subscribe(
+            callbackurl="https://localhost:8080/new_weights",
+            appli=NotifyAppli.WEIGHT,
+        )
 
     api = WithingsApi(load_credentials(), refresh_cb=save_credentials)
     print("Refreshing token...")
     api.refresh_token()
     print("\n")
+    ShowOptions(api)
 
 if __name__ == "__main__":
     main()
