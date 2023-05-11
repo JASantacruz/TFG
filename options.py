@@ -1,4 +1,4 @@
-from patient_utils import CreatePatient, GetPatientsWeight, AddMeasure
+from api import CreatePatient, GetPatientsWeight, AddMeasure
 from pick import pick
 
 def ShowOptions(api):

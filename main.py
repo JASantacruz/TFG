@@ -68,7 +68,10 @@ def main() -> None:
     if path.isfile(CREDENTIALS_FILE):
         api = WithingsApi(load_credentials(), refresh_cb=save_credentials)
         try:
-            api.user_get_device()
+            api.notify_subscribe(
+                callbackurl="{0}/new_weights".format(CALLBACK_URL),
+                appli=NotifyAppli.WEIGHT,
+            )
         except AuthFailedException:
             os.remove(CREDENTIALS_FILE)
             print("Credentials in file are expired. Re-starting auth procedure...")
@@ -100,10 +103,6 @@ def main() -> None:
         print("Auth code:", auth_code)
         print("Getting Creddentials with auth code", auth_code)
         save_credentials(auth.get_credentials(auth_code))
-        api.notify_subscribe(
-            callbackurl="https://localhost:8080/new_weights",
-            appli=NotifyAppli.WEIGHT,
-        )
 
     api = WithingsApi(load_credentials(), refresh_cb=save_credentials)
     print("Refreshing token...")
