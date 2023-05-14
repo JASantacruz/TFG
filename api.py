@@ -9,18 +9,20 @@ from dotenv import load_dotenv
 import arrow
 from withings_api.common import MeasureType
 from requests.auth import HTTPBasicAuth
-
+from utils.patient_utils import GetPatientFullUrl, GetPatientId, GetPatientName
+from utils.observation_utils import GetObservationTotal
 # Desactivar los warnings de seguridad SSL
 requests.packages.urllib3.disable_warnings() 
 
 load_dotenv()
 GET_METHOD = os.environ.get('GET_METHOD')
 POST_METHOD = os.environ.get('POST_MEHOD')
-ENDPOINT_URL = os.environ.get('ENDPOINT')
+PATIENT_ENDPOINT_URL = os.environ.get('PATIENT_ENDPOINT')
+OBSERVATION_ENDPOINT_URL = os.environ.get('OBSERVATION_ENDPOINT')
 USERNAME = os.environ.get('FHIR_USER')
 PASSWORD = os.environ.get('PASSWORD')
 
-def send_operations(method, full_url = ENDPOINT_URL, payload = None):
+def send_operations(method, full_url = PATIENT_ENDPOINT_URL, payload = None):
     try:
         if method == 'GET':
             return requests.get(url = full_url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=False)
@@ -28,7 +30,7 @@ def send_operations(method, full_url = ENDPOINT_URL, payload = None):
             headers = {"Content-Type": "application/fhir+json"}
             return requests.post(url = full_url, headers = headers, auth = HTTPBasicAuth(USERNAME, PASSWORD), verify = False, data = payload)
     except Exception as e:
-        print('There has been an error connecting to the database, please contact an administrator. Error: ', e)
+        print('There has been an error connecting to the FHIR server, please contact an administrator. Error: ', e)
 
 def CreatePatient(api):
     """
@@ -67,28 +69,13 @@ def GetPatientsWeight():
             patients.append(jsonPatient)
         selected_patient = pick(patientsNames, 'Select a patient', indicator='>')[0]
         parsed_selected_patient = patients.pop(patientsNames.index(selected_patient))
-        full_url = ENDPOINT_URL + '/' + parsed_selected_patient['id'] + '/Observation'
+        full_url = PATIENT_ENDPOINT_URL + '/' + parsed_selected_patient['id'] + '/Observation'
         response = send_operations(GET_METHOD, full_url)
-        if response.json()['total'] == 0:
+        if GetObservationTotal(response) == 0:
             print('No weights available for the selected user')
 
     except Exception as e:
         print('Unexpected error: ', e)
-
-def GetPatientId(patient):
-    """Returns the id of the patient"""
-    patient_id = patient['resource']['id']
-    return patient_id
-
-def GetPatientName(patient):
-    """Parse the name of the patient"""
-    name = patient['resource']['name']
-    return str(name[0]['given'][0] + ' ' + name[0]['family'])
-
-def GetPatientFullUrl(patient):
-    """Parse the fullurl of the patient"""
-    fullurl = patient['fullUrl']
-    return fullurl
 
 def GetPatients():
     """Get all patients from the docker"""
@@ -134,5 +121,5 @@ def AddMeasure(api):
             messages.append(fhirmsg.fhirmsg)
     
     index = pick(weights, 'Select a weight to add', indicator='>')[1]
-    response = send_operations(method=POST_METHOD, full_url='{0}/{1}/Observation'.format(ENDPOINT_URL, parsed_selected_patient["id"]), payload=messages.pop(index))
+    response = send_operations(method=POST_METHOD, full_url='{0}'.format(OBSERVATION_ENDPOINT_URL, parsed_selected_patient["id"]), payload=messages.pop(index))
     print(response)
