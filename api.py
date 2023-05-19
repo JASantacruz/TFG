@@ -10,7 +10,7 @@ import arrow
 from withings_api.common import MeasureType
 from requests.auth import HTTPBasicAuth
 from utils.patient_utils import GetPatientFullUrl, GetPatientId, GetPatientName
-from utils.observation_utils import GetObservationTotal
+from utils.observation_utils import GetObservationTotal, ParseResponse
 # Desactivar los warnings de seguridad SSL
 requests.packages.urllib3.disable_warnings() 
 
@@ -71,6 +71,7 @@ def GetPatientsWeight():
         parsed_selected_patient = patients.pop(patientsNames.index(selected_patient))
         full_url = PATIENT_ENDPOINT_URL + '/' + parsed_selected_patient['id'] + '/Observation'
         response = send_operations(GET_METHOD, full_url)
+        print(ParseResponse(response.json()))
         if GetObservationTotal(response) == 0:
             print('No weights available for the selected user')
 
