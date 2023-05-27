@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 # -- coding: utf-8; mode: python --
 
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def rootRouteHandler():
-    return make_response(
-        'OK',
-        200
-    )
+    f = open('url.tmp', 'w')
+    f.write(request.url)
+    return render_template('index.html')
 
 
 @app.route('/getweights', methods=['GET'])
