@@ -1,5 +1,3 @@
-
-from typing import Optional
 from fhir import *
 from pick import pick
 import uuid
@@ -8,6 +6,7 @@ import os
 from dotenv import load_dotenv
 import arrow
 from withings_api.common import MeasureType
+import requests
 from requests.auth import HTTPBasicAuth
 from utils.patient_utils import GetPatientFullUrl, GetPatientId, GetPatientName
 from utils.observation_utils import GetObservationTotal, ParseResponse

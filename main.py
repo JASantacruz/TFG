@@ -2,8 +2,6 @@
 
 import os
 from os import path
-import argparse
-from tracemalloc import start
 from typing import cast
 from urllib import parse
 from urllib.request import urlopen
@@ -15,7 +13,6 @@ import pickle
 from dotenv import load_dotenv
 from options import ShowOptions
 import webbrowser
-from requests.auth import HTTPBasicAuth
 import time
 
 # Load environment variables from .env file
