@@ -28,7 +28,7 @@ This project has been developed and tested on the following versions of the prev
 | Grafana     | 9.5.2    |
 | Ngrok       | 3.2.2    |
 | Ubuntu      | 22.04.2  |
-
+|
 
 In addition, you will need a Withings device (in this case the Withings Body Cardio Scale has been used), a developer account at [Withings](https://developer.withings.com/). Here you will need to create an app on the dashboard, where you will be given a set of credentials for your app, a client-id and a client-secret, as it uses OAuth2 authentication.
 
