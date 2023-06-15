@@ -1,5 +1,5 @@
 
-![[MIT License](https://img.shields.io/bower/l/MI?style=flat-square)](https://img.shields.io/bower/l/MI?style=for-the-badge)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # About The Project
 This repository contains the project of my final degree work, carried out at the [Escuela Superior de Informática](https://esi.uclm.es/) de Ciudad Real, [University of Castilla-La Mancha.](https://www.uclm.es/).
@@ -28,7 +28,7 @@ This project has been developed and tested on the following versions of the prev
 | Grafana     | 9.5.2    |
 | Ngrok       | 3.2.2    |
 | Ubuntu      | 22.04.2  |
-|
+
 
 In addition, you will need a Withings device (in this case the Withings Body Cardio Scale has been used), a developer account at [Withings](https://developer.withings.com/). Here you will need to create an app on the dashboard, where you will be given a set of credentials for your app, a client-id and a client-secret, as it uses OAuth2 authentication.
 
@@ -173,7 +173,7 @@ In addition, you will need a Withings device (in this case the Withings Body Car
                 In the disabled directory, we will find a configuration file example for the PostgreSQL database, it will be the one we will use. We will copy this file to the overrides directory
 
                 ```
-                cp disabled/datasource-postgresql.xml ./overrides
+                cp ./disabled/datasource-postgresql.xml ./overrides
                 ```
 
             3. Once we have copied this file to overrides, we edit with nano to change the ```serverName``` field.
@@ -182,7 +182,7 @@ In addition, you will need a Withings device (in this case the Withings Body Car
                 nano datasource-postgresql.xml
                 ```
 
-                In the ````serverName``` field we will set the IP address that we had in the docker0 interface, in my case 172.17.0.1
+                In the ```serverName``` field we will set the IP address that we had in the docker0 interface, in my case 172.17.0.1
                 ```
                 serverName="172.17.0.1"
                 ```
@@ -253,7 +253,7 @@ In addition, you will need a Withings device (in this case the Withings Body Car
     URL_FILE="./url.tmp"
     ``` 
 
-8. Run the ```setup.sh``` script, where the ```Flask``` and ```Ngrok``` server will be started. After that, we only need to launch the ```main.py``` file and we will have our application running.
+8. Run the ```setup.sh``` script, where the ```Flask``` and ```Ngrok``` server will be running in the background. After that, we only need to launch the ```main.py``` file and we will have our application running.
 
     Now, we can create Patients and Observations for those patients. 
 
