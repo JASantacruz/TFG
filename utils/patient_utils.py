@@ -1,3 +1,7 @@
+"""
+This file contains the logic of the functions useful for patients.
+"""
+# pylint: disable=invalid-name
 def GetPatientId(patient):
     """Returns the id of the patient"""
     patient_id = patient['resource']['id']

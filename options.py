@@ -1,17 +1,22 @@
-from api import CreatePatient, GetPatientsWeight, AddMeasure
+"""
+This file contains the modularised logic of the function
+of displaying options to the user.
+"""
+# pylint: disable=invalid-name
 from pick import pick
+from api import CreatePatient, GetPatientsWeight, AddMeasure
 
 def ShowOptions(api):
     """
-    Muestra las opciones disponibles para el usuario.
-    En función de la opción seleccionada, se ejecutará una función u otra.
-    """ 
+    Displays the options available to the user.
+    Depending on the option selected, one function or another will be executed.
+    """
+
     title = 'Select an option'
     options = ['Create a patient', 'Get patients weight', 'Add a measure to a patient']
 
-    option, index = pick(options, title, indicator='>')
+    option = pick(options, title, indicator='>')[0]
 
-                    
     if option == 'Create a patient':
         CreatePatient(api)
 

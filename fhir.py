@@ -1,33 +1,38 @@
+"""
+This file contains the logic for creating resources in FHIR format.
+"""
+# pylint: disable=invalid-name
 import json
-import requests
 from datetime import datetime
-# NOTE: some older versions of requests does not have exceptions.JSONDecodeError
-try:
-    from requests.exceptions import JSONDecodeError
-except ImportError:
-    JSONDecodeError = Exception
 
 class value:
+    """
+    Value of a Observation
+    """
     def __init__(self, unit, value, code, system="http://unitsofmeasure.org"):
         self.unit=unit
         self.value=value
         self.code=code
         self.system=system
 
-class range:
-    def __init__(self,low:value, high:value):
-        self.low=low
-        self.high=high
-
 class encounter:
+    """
+    Encounter of a Observation
+    """
     def __init__(self,routineID):
         self.reference=routineID
 
 class subject:
+    """
+    Subject of a Observation
+    """
     def __init__(self,userID):
         self.reference=userID
 
 class coding:
+    """
+    Coding of a Code
+    """
     def __init__(self,system="http://loinc.org",code="",display=""):
         self.system=system
         self.code=code
@@ -35,16 +40,12 @@ class coding:
 
 
 class code:
+    """
+    Code of a Observation
+    """
     def __init__(self, text="Business description of the exercise", codings=[]):
         self.text=text
         self.coding=codings
-
-class component:
-    def __init__(self, codings, valuerange, referencerange):
-        self.code=codings
-        self.valueRange=valuerange
-        self.referenceRange=[referencerange]
-
 
 class meta:
     def __init__(self, versionId=2, lastUpdated=datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")):
@@ -78,11 +79,17 @@ class Observation:
 
 
 class ObservationEncoder(json.JSONEncoder):
+    """
+    Class to encode Observation to JSON
+    """
     def default(self, o):
         return o.__dict__
 
 
 class ObservationMsg:
+    """
+    Create a new Observation Message in FHIR Format
+    """
     def __init__(self, observation:Observation, token):
         self.observation=observation
         self.token=token
@@ -101,7 +108,7 @@ class Patient:
         self.birthDate=birth_date
         self.active=active
         # If contact_name is not empty, then add contact information
-        if contact_name is not '':
+        if contact_name != '':
             self.contact=[{
                 "relationship": [{
                     "coding": [{
@@ -116,11 +123,17 @@ class Patient:
             }]
 
 class PatientEncoder(json.JSONEncoder):
+    """
+    Class to encode Patient to JSON
+    """
     def default(self, o):
         return o.__dict__
 
 
 class PatientMsg:
+    """
+    Create a new Patient Message in FHIR Format
+    """
     def __init__(self, patient:Patient, token):
         self.patient=patient
         self.token=token

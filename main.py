@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-
+"""
+Main project file.
+This file contains the authentication logic in the Withings system 
+and calls the show options function.
+"""
 import os
+import pickle
+import webbrowser
+import time
 from os import path
-import argparse
-from tracemalloc import start
 from typing import cast
 from urllib import parse
-from urllib.request import urlopen
-from fhir import *
 from typing_extensions import Final
 from withings_api import AuthScope, WithingsAuth, WithingsApi
 from withings_api.common import CredentialsType, AuthFailedException, NotifyAppli
-import pickle
 from dotenv import load_dotenv
 from options import ShowOptions
-import webbrowser
-from requests.auth import HTTPBasicAuth
-import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -46,7 +45,7 @@ def load_credentials() -> CredentialsType:
         return cast(CredentialsType, pickle.load(file_handle))
 
 def main() -> None:
-
+    """Main function."""
     if path.isfile(CREDENTIALS_FILE):
         api = WithingsApi(load_credentials(), refresh_cb=save_credentials)
         try:
@@ -70,15 +69,14 @@ def main() -> None:
             ),
         )
         authorize_url: Final = auth.get_authorize_url()
-        
+
         webbrowser.open(authorize_url)
         while not os.path.exists(URL_FILE):
             print("Waiting for callback...")
-            time.sleep(2)
-            pass
-        
-        f = open(URL_FILE, 'r')
-        redirected_uri = f.read()
+            time.sleep(3)
+
+        with open(URL_FILE, 'r', encoding='UTF-8') as url_file:
+            redirected_uri = url_file.read()
 
         print(redirected_uri)
         redirected_uri_params: Final = dict(
