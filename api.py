@@ -209,6 +209,6 @@ def AddMeasure(api):
     index = pick(weights, 'Select a weight to add', indicator='>')[1]
     response = send_operations(
         method=POST_METHOD,
-        full_url='{0}'.format(OBSERVATION_ENDPOINT_URL + '' + parsed_selected_patient["id"]),
+        full_url='{0}'.format(OBSERVATION_ENDPOINT_URL),
         payload=messages.pop(index))
     print(response)
