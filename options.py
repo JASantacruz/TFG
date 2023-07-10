@@ -4,7 +4,7 @@ of displaying options to the user.
 """
 # pylint: disable=invalid-name
 from pick import pick
-from api import CreatePatient, GetPatientsWeight, AddMeasure
+from api import CreatePatient, GetPatientsWeight, AddMeasure, AddSystolicBloodPressure, AddDiastolicBloodPressure
 
 def ShowOptions(api):
     """
@@ -13,7 +13,7 @@ def ShowOptions(api):
     """
 
     title = 'Select an option'
-    options = ['Create a patient', 'Get patients weight', 'Add a measure to a patient']
+    options = ['Create a patient', 'Get patients weight', 'Add a weight measurement to a patient', 'Add a systolic blood pressure measurement for a patient', 'Add a diastolic blood pressure measurement for a patient']
 
     option = pick(options, title, indicator='>')[0]
 
@@ -23,5 +23,11 @@ def ShowOptions(api):
     elif option == 'Get patients weight':
         GetPatientsWeight()
 
-    elif option == 'Add a measure to a patient':
+    elif option == 'Add a weight measurement to a patient':
         AddMeasure(api)
+    
+    elif option == 'Add a systolic blood pressure measurement for a patient':
+        AddSystolicBloodPressure(api)
+    
+    elif option == 'Add a diastolic blood pressure measurement for a patient':
+        AddDiastolicBloodPressure(api)

@@ -116,7 +116,8 @@ def CreatePatient(api):
     )
     fhirmsg=PatientMsg(msg, user.access_token)
 
-    return fhirmsg.fhirmsg
+    response = send_operations(POST_METHOD, PATIENT_ENDPOINT_URL, fhirmsg.fhirmsg)
+    print(response)
 
 def GetPatientsWeight():
     """
@@ -160,9 +161,9 @@ def GetPatients():
 
     return patients
 
-def AddMeasure(api):
+def GetPatient():
     """
-    Function in charge of the logic of adding a measure to a patient
+    Get a patient from the docker.
     """
     patients_names = []
     patients = []
@@ -172,10 +173,15 @@ def AddMeasure(api):
         patients.append(json_patient)
 
     selected_patient = pick(patients_names, 'Select a patient', indicator='>')[0]
-    parsed_selected_patient = patients.pop(patients_names.index(selected_patient))
+    return patients.pop(patients_names.index(selected_patient))
+
+def AddMeasure(api):
+    """
+    Function in charge of the logic of adding a measure to a patient
+    """
+    selected_patient = GetPatient()
     messages = []
     weights = []
-    # Print values of the 365 days
     for i in api.measure_get_meas(MeasureType.WEIGHT,
                                   startdate=arrow.utcnow().shift(days=-365),
                                   enddate=arrow.utcnow(),
@@ -199,16 +205,104 @@ def AddMeasure(api):
                 id = 2,
                 metadata = meta(),
                 code = excode,
-                encounter = encounter(parsed_selected_patient['fullUrl']),
-                subject = subject(parsed_selected_patient['fullUrl']),
+                encounter = encounter(selected_patient['fullUrl']),
+                subject = subject(selected_patient['fullUrl']),
                 effectiveDateTime = effective_date_time,
                 valueQuantity = value_quantity)
             fhirmsg=ObservationMsg(msg, user.access_token)
             messages.append(fhirmsg.fhirmsg)
-
     index = pick(weights, 'Select a weight to add', indicator='>')[1]
+    message = messages[index]
     response = send_operations(
         method=POST_METHOD,
         full_url='{0}'.format(OBSERVATION_ENDPOINT_URL),
-        payload=messages.pop(index))
+        payload=message)
+    print(response)
+
+def AddSystolicBloodPressure(api):
+    """
+    Function in charge of the logic of adding a cardio to a patient
+    """
+    selected_patient = GetPatient()
+    messages = []
+    cardios = []
+    for i in api.measure_get_meas(MeasureType.SYSTOLIC_BLOOD_PRESSURE,
+                                  startdate=arrow.utcnow().shift(days=-365),
+                                  enddate=arrow.utcnow(),
+                                  lastupdate=None).measuregrps:
+        for j in i.measures:
+            cardios.append('Date: '
+                + str(i.date.format(fmt='DD-MM-YYYY HH:mm'))
+                + ' - Systolic Blood Pressure: '
+                + str(j.value)
+                + ' mmHg')
+            msgcoding=coding(code="8480-6", display="Systolic blood pressure")
+            user = api.get_credentials()
+            excode=code(text="Systolic blood pressure",codings=[msgcoding])
+            effective_date_time=i.date.format('YYYY-MM-DD')
+            value_quantity=value(
+                unit ="mmHg",
+                value = j.value,
+                code = "mmHg")
+            msg=Observation(
+                id = 2,
+                metadata = meta(),
+                code = excode,
+                encounter = encounter(selected_patient['fullUrl']),
+                subject = subject(selected_patient['fullUrl']),
+                effectiveDateTime = effective_date_time,
+                valueQuantity = value_quantity)
+            fhirmsg=ObservationMsg(msg, user.access_token)
+            messages.append(fhirmsg.fhirmsg)
+    index = pick(cardios, 'Select a Systolic blood pressure to add', indicator='>')[1]
+    message = messages[index]
+    response = send_operations(
+        method=POST_METHOD,
+        full_url='{0}'.format(OBSERVATION_ENDPOINT_URL),
+        payload=message)
+    print(response)
+
+def AddDiastolicBloodPressure(api):
+    """
+    Function in charge of the logic of adding a cardio to a patient
+    """
+    selected_patient = GetPatient()
+    messages = []
+    cardios = []
+
+    for i in api.measure_get_meas(MeasureType.DIASTOLIC_BLOOD_PRESSURE,
+                                  startdate=arrow.utcnow().shift(days=-365),
+                                  enddate=arrow.utcnow(),
+                                  lastupdate=None).measuregrps:
+        for j in i.measures:
+            cardios.append('Date: '
+                + str(i.date.format(fmt='DD-MM-YYYY HH:mm'))
+                + ' - Diastolic Blood Pressure: '
+                + str(j.value)
+                + ' mmHg')
+
+            msgcoding=coding(code="8462-4", display="Diastolic blood pressure")
+            user = api.get_credentials()
+            excode=code(text="Diatolic blood pressure",codings=[msgcoding])
+            effective_date_time=i.date.format('YYYY-MM-DD')
+            value_quantity=value(
+                unit ="mmHg",
+                value = j.value,
+                code = "mmHg")
+            msg=Observation(
+                id = 2,
+                metadata = meta(),
+                code = excode,
+                encounter = encounter(selected_patient['fullUrl']),
+                subject = subject(selected_patient['fullUrl']),
+                effectiveDateTime = effective_date_time,
+                valueQuantity = value_quantity)
+            fhirmsg=ObservationMsg(msg, user.access_token)
+            messages.append(fhirmsg.fhirmsg)
+    index = pick(cardios, 'Select a Diastolic blood pressure to add', indicator='>')[1]
+    message = messages[index]
+    response = send_operations(
+        method=POST_METHOD,
+        full_url='{0}'.format(OBSERVATION_ENDPOINT_URL),
+        payload=message)
     print(response)
